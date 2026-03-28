@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"net/http/httputil"
 	"net/url"
+	"os"
 	"sync"
 	"time"
 
@@ -160,6 +161,22 @@ func main() {
 		r.URL.Path = "/" // Proxy to root of ACP server
 
 		proxy.ServeHTTP(w, r)
+	})
+
+	// Setup Reverse Proxy for the Frontend
+	frontendURLStr := os.Getenv("FRONTEND_URL")
+	if frontendURLStr == "" {
+		frontendURLStr = "http://localhost:3001" // Default to local Vinext dev server
+	}
+	frontendURL, err := url.Parse(frontendURLStr)
+	if err != nil {
+		log.Fatalf("Invalid FRONTEND_URL: %v", err)
+	}
+	frontendProxy := httputil.NewSingleHostReverseProxy(frontendURL)
+
+	// Route all other non-API traffic to the frontend
+	r.NotFound(func(w http.ResponseWriter, r *http.Request) {
+		frontendProxy.ServeHTTP(w, r)
 	})
 
 	log.Println("Backend server starting on :8080")

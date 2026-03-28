@@ -11,7 +11,7 @@ export default function Home() {
     // Optionally fetch active sessions or auto-create a mock one for demo
     const initSession = async () => {
       try {
-        const res = await fetch('http://localhost:8080/api/sessions', {
+        const res = await fetch('/api/sessions', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ project: 'https://github.com/cloudflare/vinext' })
@@ -41,7 +41,7 @@ export default function Home() {
     // Attempt to connect to backend proxy, fail gracefully for demo
     try {
       // In a real implementation this would establish the SSE/WebSocket via ACP
-      const res = await fetch(`http://localhost:8080/api/sessions/${session.id}/ws`, {
+      const res = await fetch(`/api/sessions/${session.id}/ws`, {
         method: 'POST', // or however the ACP server initiates a turn
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

@@ -9,17 +9,19 @@ services:
       - "8080:8080"
     environment:
       - PORT=8080
+      - FRONTEND_URL=http://frontend:3001
+    depends_on:
+      - frontend
     restart: unless-stopped
 
   frontend:
     build:
       context: ./frontend
       dockerfile: Dockerfile
+    # Exposing ports is optional now since backend proxies them,
+    # but keeping them exposed for direct access if needed during dev
     ports:
-      - "3000:3000"
       - "3001:3001"
     environment:
       - NODE_ENV=development
-    depends_on:
-      - backend
     restart: unless-stopped
